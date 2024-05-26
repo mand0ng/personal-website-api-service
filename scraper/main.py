@@ -8,10 +8,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-AMAZON = "https://amazon.ca"
-# API_BASE_URL = os.getenv("API_BASE_URL", "http://localhost:5000")
-# API_BASE_URL = "http://localhost"
-API_BASE_URL = "https://my-personal-website-craqo.ondigitalocean.app"
+AMAZON = os.getenv("AMAZON_URL")
+API_BASE_URL = os.getenv("API_URL")
 
 URLS = {
     AMAZON: {
@@ -122,6 +120,7 @@ def post_results(results, endpoint, mode, search_text=None, source=None, session
 # search text 
 # /results
 async def main(url, search_text, response_route, session_id):
+    print("main: running scraper with session_id:", session_id)
     metadata = URLS.get(url)
     if not metadata:
         print("Invalid URL.")
