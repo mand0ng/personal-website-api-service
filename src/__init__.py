@@ -13,9 +13,7 @@ import threading
 db = SQLAlchemy()
 load_dotenv()
 
-# REACT_APP_SOCKET_URL = os.getenv("REACT_APP_SOCKET_URL", "http://localhost:3001")
-# REACT_APP_SOCKET_URL = os.getenv("REACT_APP_SOCKET_URL", "http://localhost/ws")
-EXPRESS_SERVER = "https://my-personal-website-craqo.ondigitalocean.app/exp"
+EXPRESS_URL = os.getenv("EXPRESS_URL")
 
 class User(db.Model):
     __tablename__ = "users"
@@ -69,19 +67,16 @@ def create_app():
     CORS(app)
 
 
-    # Initialize scheduler / cron
-    scheduler = BackgroundScheduler()
-    scheduler.start()
+    # # Initialize scheduler / cron
+    # scheduler = BackgroundScheduler()
+    # scheduler.start()
 
-    def my_cron_job():
-        print("This is a cron job!")
-
-    # cron for testing, runs every minute
-    scheduler.add_job(my_cron_job, trigger='cron', minute='*')
-
-    # # cron for testing, runs every 1 am 
-    # scheduler.add_job(my_cron_job, trigger='cron', hour=1, minute=0)
-    
+    # def my_cron_job():
+    #     print("This is a cron job!")
+    # # cron for testing, runs every minute
+    # scheduler.add_job(my_cron_job, trigger='cron', minute='*')
+    # # # cron for testing, runs every 1 am 
+    # # scheduler.add_job(my_cron_job, trigger='cron', hour=1, minute=0)
 
 
     ### Helpers ###
@@ -97,8 +92,7 @@ def create_app():
     
     def pass_data_to_websocket(data):
 
-        express_endpoint = 'http://localhost:3001/data-from-flask'
-        # express_endpoint = EXPRESS_SERVER + '/data-from-flask'
+        express_endpoint = EXPRESS_URL + '/data-from-flask'
         print("pass_data_to_websocket:", express_endpoint)
         # try:
         response = requests.post(express_endpoint, json=data)
@@ -144,7 +138,8 @@ def create_app():
     
     def run_scraper(url, search_text, mode, session_id):
         # command = f"python3 ./scraper/__init__.py {url} \"{search_text}\" /api/results {mode} {session_id}"
-        command = f"python3 ./scraper/__init__.py {url} \"{search_text}\" /api/results {mode} {session_id}"
+        print("run_scraper: session_id: " + session_id + "search_text: " + search_text)
+        command = f"python3 ./scraper/__init__.py {url} \"{search_text}\" /results {mode} {session_id}"
         subprocess.Popen(command, shell=True)
         
         # DEBUG..
@@ -159,7 +154,8 @@ def create_app():
 
     @api_bp.route("/test", methods=["GET"])
     def test():
-        return res({"message": "Hello World"}, 200)
+        run_scraper("https://amazon.ca", "test", 1, str(uuid.uuid4()))
+        return res({"message": "scraper run"}, 200)
 
     @api_bp.route("/search", methods=["POST"])
     def search():

@@ -31,4 +31,3 @@ def delete_todays_deal():
 
 if __name__ == "__main__":
     cli()
-    # socketio.run(app, debug=True)
